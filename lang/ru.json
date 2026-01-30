@@ -1,0 +1,30 @@
+{
+  "prefix": "{olive}1337community {default}• ",
+  
+  "queue.added": "{gold}Вы добавлены в очередь ожидания.",
+  "queue.help_hint": "{gold}Напишите {lightred}!help{gold} в чат для справки.",
+  "queue.feedback": "Обратная связь в Discord: {lightred}@easy.rs",
+  "queue.current": "Текущая очередь:",
+  "queue.requeued": "Очередь обновлена",
+  
+  "arena.info": "Арена: {gold}{0}",
+  "arena.round_type": "Тип раунда: {gold}{0}",
+  "arena.opponent": "Противник: {gold}{0}",
+  "arena.no_opponent": "Нет противника",
+  "arena.created": "Успешно создано {0} арен.",
+  
+  "round.score": "Вы: {green}{0}{default} | {1}: {lightred}{2}",
+  "round.you_won": "{green}Вы победили!",
+  "round.you_lost": "{red}Вы проиграли!",
+  
+  "help.header": "----------------- CS2 Multi 1v1 ----------",
+  "help.line1": "1. Вы начинаете на нижней арене.",
+  "help.line2": "2. Победа повышает вас на арену выше.",
+  "help.line3": "3. Поражение понижает вас на арену ниже.",
+  "help.line4": "4. Побеждает тот, у кого больше убийств в конце раунда.",
+  "help.line5": "5. При ничьей побеждает тот, кто сделал последний фраг.",
+  "help.round_types": "--- Типы раундов случайные.",
+  "help.no_challenge": "--- Вызов игроков пока не поддерживается.",
+  "help.no_guns": "--- Выбор оружия пока не поддерживается.",
+  "help.feedback": "--- Обратная связь и баги в Discord: {lightred}@easy.rs"
+}

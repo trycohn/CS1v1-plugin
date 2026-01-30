@@ -1,6 +1,8 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 
 namespace CS2Multi1v1.Models;
 
@@ -12,6 +14,7 @@ internal class Arena
     private int _rank;
     private RoundType _roundType;
     private ILogger<CS2Multi1v1> _logger;
+    private IStringLocalizer _localizer;
 
     public ArenaPlayer? _player1;
     private int _player1Kills;
@@ -20,11 +23,12 @@ internal class Arena
     public ArenaPlayer? _player2; // these should be private, use util methods for interation
     private int _player2Kills;
 
-    public Arena(ILogger<CS2Multi1v1> logger, Tuple<SpawnPoint, SpawnPoint> spawns)
+    public Arena(ILogger<CS2Multi1v1> logger, IStringLocalizer localizer, Tuple<SpawnPoint, SpawnPoint> spawns)
     {
         _spawns = spawns;
         _rank = 0;
         _logger = logger;
+        _localizer = localizer;
         _player1Kills = 0;
         _player1HasLastKill = true;
         _player2Kills = 0;
@@ -61,11 +65,11 @@ internal class Arena
             _logger.LogInformation("Switch p1 team..");
             _player1?.PlayerController.SwitchTeam(CsTeam.Terrorist);
 
-            string opponentName = isP2Valid() ? _player2!.PlayerController.PlayerName : "No Opponent";
+            string opponentName = isP2Valid() ? _player2!.PlayerController.PlayerName : _localizer.ForPlayer(_player1!.PlayerController, "arena.no_opponent");
 
-            _player1?.PrintToChat($"Arena:      {ChatColors.Gold}{_rank}");
-            _player1?.PrintToChat($"Round Type: {ChatColors.Gold}{_roundType.Name}");
-            _player1?.PrintToChat($"Opponent:   {ChatColors.Gold}{opponentName}");
+            PrintLocalized(_player1!, "arena.info", _rank);
+            PrintLocalized(_player1!, "arena.round_type", _roundType.Name);
+            PrintLocalized(_player1!, "arena.opponent", opponentName);
 
             _player1!.PlayerController.Clan = $"ARENA {_rank}";
         }
@@ -75,11 +79,11 @@ internal class Arena
             _logger.LogInformation("Switch p2 team..");
             _player2?.PlayerController.SwitchTeam(CsTeam.CounterTerrorist);
 
-            string opponentName = isP1Valid() ? _player1!.PlayerController.PlayerName : "No Opponent";
+            string opponentName = isP1Valid() ? _player1!.PlayerController.PlayerName : _localizer.ForPlayer(_player2!.PlayerController, "arena.no_opponent");
 
-            _player2?.PrintToChat($"Arena:      {ChatColors.Gold}{_rank}");
-            _player2?.PrintToChat($"Round Type: {ChatColors.Gold}{_roundType.Name}");
-            _player2?.PrintToChat($"Opponent:   {ChatColors.Gold}{opponentName}");
+            PrintLocalized(_player2!, "arena.info", _rank);
+            PrintLocalized(_player2!, "arena.round_type", _roundType.Name);
+            PrintLocalized(_player2!, "arena.opponent", opponentName);
 
             _player2!.PlayerController.Clan = $"ARENA {_rank}";
         }
@@ -155,8 +159,8 @@ internal class Arena
     {
         if (isP1Valid() && isP2Valid())
         {
-            _player1?.PrintToChat($"You: {ChatColors.Green}{_player1Kills}{ChatColors.Default} | {_player2?.PlayerController.PlayerName}: {ChatColors.LightRed}{_player2Kills}");
-            _player2?.PrintToChat($"You: {ChatColors.Green}{_player2Kills}{ChatColors.Default} | {_player1?.PlayerController.PlayerName}: {ChatColors.LightRed}{_player1Kills}");
+            PrintLocalized(_player1!, "round.score", _player1Kills, _player2!.PlayerController.PlayerName, _player2Kills);
+            PrintLocalized(_player2!, "round.score", _player2Kills, _player1!.PlayerController.PlayerName, _player1Kills);
         }
     }
 
@@ -198,23 +202,23 @@ internal class Arena
         {
             if (_player1Kills > _player2Kills)
             {
-                _player1!.PrintToChat($"{ChatColors.Green}You won!");
-                _player2!.PrintToChat($"{ChatColors.Red}You lost!");
+                PrintLocalized(_player1!, "round.you_won");
+                PrintLocalized(_player2!, "round.you_lost");
             }
             else if (_player2Kills > _player1Kills)
             {
-                _player2!.PrintToChat($"{ChatColors.Green}You won!");
-                _player1!.PrintToChat($"{ChatColors.Red}You lost!");
+                PrintLocalized(_player2!, "round.you_won");
+                PrintLocalized(_player1!, "round.you_lost");
             }
             else if (_player1HasLastKill)
             {
-                _player1!.PrintToChat($"{ChatColors.Green}You won!");
-                _player2!.PrintToChat($"{ChatColors.Red}You lost!");
+                PrintLocalized(_player1!, "round.you_won");
+                PrintLocalized(_player2!, "round.you_lost");
             }
             else
             {
-                _player2!.PrintToChat($"{ChatColors.Green}You won!");
-                _player1!.PrintToChat($"{ChatColors.Red}You lost!");
+                PrintLocalized(_player2!, "round.you_won");
+                PrintLocalized(_player1!, "round.you_lost");
             }
         }
     }
@@ -272,5 +276,12 @@ internal class Arena
             && _player2.PlayerController.IsValid 
             && _player2.PlayerController.Connected == PlayerConnectedState.PlayerConnected 
             && _player2.PlayerController.PlayerPawn.IsValid;
+    }
+
+    private void PrintLocalized(ArenaPlayer player, string key, params object[] args)
+    {
+        string prefix = _localizer["prefix"];
+        string message = _localizer.ForPlayer(player.PlayerController, key, args);
+        player.PlayerController.PrintToChat($"{prefix}{message}");
     }
 }

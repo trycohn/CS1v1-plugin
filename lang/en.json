@@ -1,0 +1,30 @@
+{
+  "prefix": "{olive}1337community {default}• ",
+  
+  "queue.added": "{gold}You have been added to the waiting queue.",
+  "queue.help_hint": "{gold}Type {lightred}!help{gold} in chat to see info.",
+  "queue.feedback": "Please message {lightred}@easy.rs{gold} on Discord with any feedback.",
+  "queue.current": "Current Queue:",
+  "queue.requeued": "Requeued",
+  
+  "arena.info": "Arena: {gold}{0}",
+  "arena.round_type": "Round Type: {gold}{0}",
+  "arena.opponent": "Opponent: {gold}{0}",
+  "arena.no_opponent": "No Opponent",
+  "arena.created": "Successfully instantiated {0} arenas.",
+  
+  "round.score": "You: {green}{0}{default} | {1}: {lightred}{2}",
+  "round.you_won": "{green}You won!",
+  "round.you_lost": "{red}You lost!",
+  
+  "help.header": "----------------- CS2 Multi 1v1 ----------",
+  "help.line1": "1. You will begin in the bottom arena.",
+  "help.line2": "2. A win promotes you an arena.",
+  "help.line3": "3. A loss demotes you an arena.",
+  "help.line4": "4. Whoever has the most kills at the end of the round wins.",
+  "help.line5": "5. Whoever got the last kill wins in the event of a tie.",
+  "help.round_types": "--- Round types are random.",
+  "help.no_challenge": "--- Challenging players is not supported yet.",
+  "help.no_guns": "--- Selecting guns is not supported yet.",
+  "help.feedback": "--- Please message {lightred}@easy.rs{default} on Discord with any feedback or bugs."
+}

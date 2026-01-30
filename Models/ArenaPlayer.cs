@@ -1,6 +1,5 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
-using CounterStrikeSharp.API.Modules.Utils;
 
 namespace CS2Multi1v1.Models;
 
@@ -56,8 +55,4 @@ public class ArenaPlayer
         }
     }
 
-    public void PrintToChat(string text)
-    {
-        PlayerController.PrintToChat($" {ChatColors.Olive}  CS2Multi1v1 \u2022 {ChatColors.Default}{text}");
-    }
 }

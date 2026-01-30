@@ -1,8 +1,10 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Utils;
 using CS2Multi1v1.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -12,7 +14,7 @@ namespace CS2Multi1v1;
 
 public class CS2Multi1v1 : BasePlugin
 {
-    public override string ModuleName => "CS2Multi1v1";
+    public override string ModuleName => "1337community";
     public override string ModuleVersion => "beta_1.0.0";
     public override string ModuleAuthor => "rockCityMath";
     public override string ModuleDescription => "Supports multiple automatic 1v1 arenas with rank climbing.";
@@ -87,9 +89,9 @@ public class CS2Multi1v1 : BasePlugin
         ArenaPlayer arenaPlayer = new ArenaPlayer(playerController);
         _waitingArenaPlayers.Enqueue(arenaPlayer);
         _logger.LogInformation($"Player {arenaPlayer.PlayerController.PlayerName} added to waiting queue. Queue size: {_waitingArenaPlayers.Count}, Arenas: {_rankedArenas.Count}");
-        arenaPlayer.PrintToChat($"{ChatColors.Gold}You have been added to the waiting queue.");
-        arenaPlayer.PrintToChat($"{ChatColors.Gold}Type {ChatColors.LightRed}!help{ChatColors.Gold} in chat to see info.");
-        arenaPlayer.PrintToChat($"Please message {ChatColors.LightRed}@easy.rs{ChatColors.Gold} on Discord with any feedback.");
+        PrintLocalized(playerController, "queue.added");
+        PrintLocalized(playerController, "queue.help_hint");
+        PrintLocalized(playerController, "queue.feedback");
 
         // Если есть 2+ игрока в очереди и есть свободные арены - сразу распределяем
         TryAssignWaitingPlayers();
@@ -302,16 +304,16 @@ public class CS2Multi1v1 : BasePlugin
     [CommandHelper(minArgs: 0, usage: "", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     public void OnHelp(CCSPlayerController player, CommandInfo commandInfo)
     {
-        PrintToChatCustom(player, "----------------- CS2 Multi 1v1 ----------");
-        PrintToChatCustom(player, "1. You will begin in the bottom arena.");
-        PrintToChatCustom(player, "2. A win promotes you an arena.");
-        PrintToChatCustom(player, "3. A loss demotes you an arena.");
-        PrintToChatCustom(player, "4. Whoever has the most kills at the end of the round wins.");
-        PrintToChatCustom(player, "5. Whoever got the last kill wins in the event of a tie.");
-        PrintToChatCustom(player, "--- Round types are random.");
-        PrintToChatCustom(player, "--- Challenging players is not supported yet.");
-        PrintToChatCustom(player, "--- Selecting guns is not supported yet.");
-        PrintToChatCustom(player, $"--- Please message {ChatColors.LightRed}@easy.rs{ChatColors.Default} on Discord with any feedback or bugs.");
+        PrintLocalized(player, "help.header");
+        PrintLocalized(player, "help.line1");
+        PrintLocalized(player, "help.line2");
+        PrintLocalized(player, "help.line3");
+        PrintLocalized(player, "help.line4");
+        PrintLocalized(player, "help.line5");
+        PrintLocalized(player, "help.round_types");
+        PrintLocalized(player, "help.no_challenge");
+        PrintLocalized(player, "help.no_guns");
+        PrintLocalized(player, "help.feedback");
     }
 
     // Show current players in waiting queue
@@ -322,7 +324,7 @@ public class CS2Multi1v1 : BasePlugin
     {
         if(player == null || !player.IsValid) return;
 
-        player.PrintToChat("Current Queue: ");
+        PrintLocalized(player, "queue.current");
         foreach(ArenaPlayer p in _waitingArenaPlayers)
         {
             player.PrintToChat(p.PlayerController.PlayerName);
@@ -347,7 +349,7 @@ public class CS2Multi1v1 : BasePlugin
             }
         }
 
-        Server.PrintToChatAll("Requeued");
+        Server.PrintToChatAll(Localizer["queue.requeued"]);
     }
 
     // Console logs information for all arenas with 1+ players
@@ -375,7 +377,7 @@ public class CS2Multi1v1 : BasePlugin
         int count = 0;
         foreach (Tuple<SpawnPoint, SpawnPoint> arenaSpawns in arenasSpawns)
         {
-            Arena arena = new Arena(_logger, arenaSpawns);
+            Arena arena = new Arena(_logger, Localizer, arenaSpawns);
             _rankedArenas.Add(arena);
             count++;
         }
@@ -384,7 +386,7 @@ public class CS2Multi1v1 : BasePlugin
 
         if (player != null && player.IsValid)
         {
-            player.PrintToChat($"Successfully instantiated {_rankedArenas.Count} arenas.");
+            PrintLocalized(player, "arena.created", _rankedArenas.Count);
         }
     }
 
@@ -409,7 +411,7 @@ public class CS2Multi1v1 : BasePlugin
             int count = 0;
             foreach (Tuple<SpawnPoint, SpawnPoint> arenaSpawns in arenasSpawns)
             {
-                Arena arena = new Arena(_logger, arenaSpawns);
+                Arena arena = new Arena(_logger, Localizer, arenaSpawns);
                 _rankedArenas.Add(arena);
                 count++;
             }
@@ -474,8 +476,10 @@ public class CS2Multi1v1 : BasePlugin
         }
     }
 
-    public void PrintToChatCustom(CCSPlayerController playerController, string text)
+    public void PrintLocalized(CCSPlayerController player, string key, params object[] args)
     {
-        playerController.PrintToChat($" {ChatColors.Olive}  CS2Multi1v1 \u2022 {ChatColors.Default}{text}");
+        string prefix = Localizer["prefix"];
+        string message = Localizer.ForPlayer(player, key, args);
+        player.PrintToChat($"{prefix}{message}");
     }
 }
